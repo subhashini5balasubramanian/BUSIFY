@@ -1,0 +1,1141 @@
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  background: linear-gradient(120deg, #fff1e0 0%, #ffd4ba 100%);
+  min-height: 100vh;
+  margin: 0;
+}
+.splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 3em;
+  font-weight: bold;
+  letter-spacing: .09em;
+  background: linear-gradient(135deg, #ff8800 0%, #ffb74d 100%);
+  color: #fff;
+  border-radius: 32px;
+  box-shadow: 0 4px 40px rgba(255,140,0,0.11), 0 2px 30px rgba(255,140,0,0.25);
+  animation: fadein 1.4s;
+}
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.splash-logo {
+  font-size: 2.1em;
+  font-weight: bold;
+  letter-spacing: 0.11em;
+  background: -webkit-linear-gradient(#fffde4, #ffe2af 60%, #fffbe6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(255,140,0,0.15);
+  padding: 0.4em 1.5em;
+  border-radius: 18px;
+}
+.login-card {
+  max-width: 350px;
+  margin: 70px auto;
+  padding: 34px 30px 22px 30px;
+  background: rgba(255,255,255,0.98);
+  border-radius: 24px;
+  box-shadow: 0 2px 30px #ff880044;
+}
+.login-card h2 {
+  font-weight: bold;
+  margin-bottom: 28px;
+}
+.login-card input, .login-card button {
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 12px 13px;
+  font-size: 1.11em;
+  border-radius: 12px;
+  border: 1px solid #ffd4ba;
+  background: #fff6f1;
+  transition: 0.2s;
+}
+.login-card button {
+  font-weight: bold;
+  background: #ff8800;
+  color: #fff;
+  border: none;
+  box-shadow: 0 1px 10px #ffa73f33;
+  cursor: pointer;
+}
+.login-card button:hover {
+  background: #ffb74d;
+}
+.dashboard-bg {
+  background: linear-gradient(120deg, #fff1e0 0%, #ffd4ba 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.top-nav {
+  display: flex;
+  align-items: center;
+  padding: 14px 22px;
+  background: #ff8800;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.12em;
+  box-shadow: 0 2px 10px #ff880033;
+}
+.hamburger {
+  background: none;
+  border: none;
+  font-size: 2em;
+  margin-right: 18px;
+  color: #fff;
+  cursor: pointer;
+}
+.user-info {
+  margin-left: auto;
+  font-size: 1.07em;
+  background: #fff7ea;
+  color: #ff8800;
+  padding: 7px 18px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.main-content {
+  flex: 1;
+  padding: 36px 22px 90px 22px;
+}
+.bus-stop {
+  font-size: 1.35em;
+  color: #ff8800;
+  margin: 6px 0 18px 0;
+  font-weight: 700;
+}
+.bus-card {
+  background: #fff4e6;
+  border-radius: 16px;
+  padding: 24px 18px 14px 18px;
+  margin: 16px 0;
+  box-shadow: 0 2px 12px #ffd4ba59;
+}
+.crowd {
+  margin-top: 7px;
+  font-weight: bold;
+  padding:2px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+.crowd-medium { background:#ffe69c; color:#d39d00; }
+.crowd-crowded { background:#ffd1d1; color:#d32f2f;}
+.crowd-low { background:#d8ffd8; color:#2e7d32;}
+.details-btn {
+  margin-top:9px;
+  padding: 8px 20px;
+  font-size:1em;
+  background:#ff8800;
+  color:#fff;
+  border:none;
+  border-radius:9px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 1px 7px #ff880022;
+}
+.details-btn:hover { background:#ffb74d; }
+.bottom-bar {
+  position: fixed;
+  width: 100vw;
+  max-width: 480px;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 -3px 18px #ff880025;
+  padding: 0 0 2px 0;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  z-index: 9;
+}
+.bottom-bar button {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 1.08em;
+  padding: 12px 0;
+  color: #ff8800;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background .16s, color .16s;
+}
+.bottom-bar button.active, .bottom-bar button:hover {
+  background: #ff8800;
+  color: #fff;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+.search-input {
+  display:block;
+  width:92%;
+  margin:12px 0;
+  padding:12px;
+  border-radius:9px;
+  border:1px solid #ffd4ba;
+  background:#fff8f2;
+  font-size:1em;
+}
+.search-btn {
+  font-size:1em;
+  background:#ff8800; color:#fff;
+  border:none; border-radius:9px; font-weight:bolder;
+  padding:10px 24px; margin-top:8px; cursor:pointer;
+  box-shadow:0 1px 7px #ff880022;
+}
+.search-btn:hover { background: #ffb74d; }
+.add-lost-btn {
+  font-size:1em;
+  background:#ff8800;color:#fff;
+  border:none; border-radius:9px; font-weight:bolder;
+  padding:10px 44px; margin-top:10px; cursor:pointer;
+  box-shadow:0 1px 7px #ff880022;
+}
+.sos-btn {
+  font-size:1.1em;
+  background: #d32f2f;
+  color: #fff;
+  border:none; border-radius:9px; font-weight: bold;
+  padding:18px 44px; margin-top:20px; margin-left: 6px; margin-bottom: 10px;
+  box-shadow:0 1px 16px #d32f2f29;
+  cursor:pointer;
+  letter-spacing: 1px;
+}
+.sos-btn:hover { background:#ffb74d; color:#d32f2f; }
+.dashboard-bg {
+  background: linear-gradient(120deg, #fff1e0 0%, #ffd4ba 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TOP NAV REVAMPED */
+.top-nav-new {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 10px 22px;
+  background: #ff8800;
+  color: #fff;
+  border-bottom-left-radius: 22px;
+  border-bottom-right-radius: 22px;
+  box-shadow: 0 2px 12px #0002;
+  position: relative;
+}
+.title-busify {
+  font-size: 2em;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: bold;
+  letter-spacing: .13em;
+  color: #fff;
+  text-shadow: 0 3px 10px #0001;
+}
+.nearest-stop {
+  text-align: center;
+  flex: 1;
+}
+.nearest-label {
+  font-size: 1em;
+  color: #fffde0;
+  margin-right: 6px;
+  font-weight: 500;
+}
+.nearest-name {
+  font-size: 1.07em;
+  font-weight: bold;
+  color: #f80;
+  background: #222;
+  padding: 4px 18px;
+  border-radius: 13px;
+  box-shadow: 0 1px 6px #ffd4ba33;
+}
+.user-cover {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 14px;
+}
+.user-avatar {
+  background: #fff;
+  color: #070707;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1.15em;
+  padding: 8px 13px;
+  box-shadow: 0 1px 6px #ffd4ba33;
+}
+.user-text {
+  color: #000000;
+  background: #fff;
+  border-radius: 13px;
+  padding: 4px 11px;
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: .06em;
+}
+
+/* MAIN CONTENT AND BUS CARDS */
+.main-content { flex: 1; padding: 26px 14px 100px 14px; }
+.bus-card {
+  background: #fff;
+  border-radius: 17px;
+  box-shadow: 0 2px 18px #ff880044, 0 1px 8px #0002;
+  padding: 22px 19px 14px;
+  margin: 14px 0;
+}
+.bus-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.bus-num {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: #ff8800;
+  margin-right: 6px;
+}
+.bus-route {
+  font-size: 1.01em;
+  color: #111;
+  background: #ffedd2;
+  border-radius: 10px;
+  padding: 2px 13px;
+  font-weight: 600;
+}
+.bus-arrival {
+  font-size: 1.12em;
+  color: #222;
+  margin-bottom: 3px;
+}
+.crowd {
+  margin-left: auto;
+  font-weight: bold;
+  padding:4px 12px;
+  border-radius: 10px;
+  font-size: .95em;
+  box-shadow: 0 1px 6px #ffd4ba33;
+}
+.crowd-medium { background:#ffe69c; color:#d39d00; }
+.crowd-crowded { background:#ffd1d1; color:#d32f2f;}
+.crowd-low { background:#d8ffd8; color:#2e7d32;}
+.details-btn {
+  margin-top: 5px;
+  padding: 9px 22px;
+  font-size:1em;
+  background:#ff8800;
+  color: #fff;
+  border:none;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 1px 7px #ff880022;
+  transition: background .16s;
+}
+.details-btn:hover { background:#000; color:#ff8800;}
+.search-input {
+  display:block;
+  width:96%;
+  margin:12px 0;
+  padding:13px;
+  border-radius:13px;
+  border:1px solid #222;
+  background:#fff8f2;
+  font-size:1em;
+}
+.search-btn {
+  font-size:1em;
+  background:#ff8800; color:#fff;
+  border:none; border-radius:9px; font-weight:bolder;
+  padding:10px 24px; margin-top:8px; cursor:pointer;
+  box-shadow:0 1px 7px #ff880022;
+}
+.add-lost-btn {
+  font-size:1em;
+  background:#ff8800;color:#fff;
+  border:none; border-radius:9px; font-weight:bolder;
+  padding:10px 44px; margin-top:10px; cursor:pointer;
+  box-shadow:0 1px 7px #ff880022;
+}
+.sos-btn {
+  font-size:1.1em;
+  background: #d32f2f;
+  color: #fff;
+  border:none; border-radius:9px; font-weight: bold;
+  padding:18px 44px; margin-top:20px; margin-bottom: 10px;
+  box-shadow:0 1px 16px #d32f2f29;
+  cursor:pointer;
+  letter-spacing: 1px;
+}
+.sos-btn:hover { background:#ffb74d; color:#d32f2f; }
+/* Glassmorphism for bottom nav */
+.bottom-bar-new {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100vw;
+  max-width: 520px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  box-shadow: 0 -3px 25px #ff880055, 0 -2px 14px #ffd4ba14;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 22px 4px 22px;
+  z-index: 99;
+}
+
+.bottom-bar-new button {
+  flex: 1 1 0;
+  border: none;
+  background: none;
+  font-size: 1.09em;
+  padding: 12px 0 6px 0;
+  margin: 0 8px;
+  color: #222;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background .16s, color .16s;
+  border-radius: 13px;
+}
+
+.bottom-bar-new button.active,
+.bottom-bar-new button:hover {
+  background: #ff8800;
+  color: #fff;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+@media (max-width: 600px) {
+  .main-content { padding-bottom: 100px; }
+  .bottom-bar-new { max-width: 100vw; }
+}
+/* For Map and Nearby Buses card section */
+.map-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #fff8f1;
+  border-radius: 22px;
+  box-shadow: 0 1px 8px #ff880022;
+  padding: 23px 10px 18px 18px;
+  margin-bottom: 28px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.nearby-map-img {
+  width: 140px;
+  height: 140px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 1px 6px #ffd4ba33;
+  object-fit: cover;
+  border: 2px solid #ff8800;
+}
+
+.nearby-bus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-left: 13px;
+}
+
+.nearby-bus-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 13px;
+  box-shadow: 0 1px 4px #ffd4ba22;
+  padding: 10px 17px;
+  color: #222;
+  margin-bottom: 3px;
+}
+
+.nearby-bus-card .bus-num {
+  color: #ff8800;
+  font-weight: bold;
+  font-size: 1.09em;
+  margin-right: 11px;
+}
+
+.nearby-bus-card .bus-route {
+  color: #3a3a3a;
+  font-size: .97em;
+  margin-right: 8px;
+  border-radius: 7px;
+  background: #fff6ed;
+  padding: 2px 11px;
+  font-weight: 500;
+}
+.modal-bg {
+  z-index: 99999;
+  position: fixed;
+  left:0; top:0; right:0; bottom:0;
+  background: rgba(31, 20, 0, 0.27);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-box {
+  background: #fff;
+  padding: 34px 32px 18px 32px;
+  border-radius: 22px;
+  color: #222;
+  font-size: 1.13em;
+  min-width: 220px;
+  max-width: 96vw;
+  box-shadow: 0 8px 30px #ff880044, 0 3px 22px #2222;
+  text-align: center;
+  animation: fadein .18s;
+}
+.modal-close {
+  margin-top: 18px;
+  background: #ff8800;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  font-size: 1em;
+  padding: 8px 26px;
+  border-radius: 11px;
+  cursor: pointer;
+}
+@keyframes fadein { from { opacity: 0; transform: scale(.945);} to { opacity: 1; transform: none; } }
+.bottom-bar-new {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+.bottom-bar-new button {
+  flex: 1 1 0;
+  margin: 0 8px;
+}
+.bottom-bar-new {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+.bottom-bar-new button {
+  flex: 1 1 0;
+  margin: 0 10px;
+  background: none;
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
+  padding: 10px 0;
+}
+.bottom-bar-new button.active {
+  color: #ff8800;
+  font-weight: bold;
+}
+.glass-box, .dashboard-card, .modal-box {
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 24px;
+  transition: box-shadow 0.2s;
+}
+
+.dashboard-bg {
+  min-height: 100vh;
+  padding: 36px;
+  background: linear-gradient(135deg,#ff880010 30%,#11111122 100%);
+}
+
+.dashboard-card {
+  font-family: 'Montserrat',sans-serif;
+  margin-bottom: 24px;
+  text-align: center;
+  min-width: 160px;
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.dashboard-card:hover {
+  box-shadow: 0 12px 36px 0 rgba(75, 180, 180, 0.14);
+  transform: scale(1.04);
+  border-color: #ff8800;
+}
+
+/* Table Glass Effect */
+.dashboard-table, .glass-table {
+  background: rgba(255,255,255,0.09);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px 0 rgba(31, 38, 135, 0.10);
+  overflow: hidden;
+}
+/* Table header, cell styling */
+.dashboard-table th, .dashboard-table td,
+.glass-table th, .glass-table td {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 10px 14px;
+  color: #222;
+}
+/* Responsive Table */
+.dashboard-table, .glass-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+.dashboard-table th {
+  background: rgba(255,255,255,0.22);
+  font-weight: 600;
+}
+
+h2, h3, h4 {
+  font-family: 'Montserrat', sans-serif;
+}
+.glass-box {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.crowd-low { /* if you use these somewhere */
+  color: #22c55e;
+}
+.crowd-medium {
+  color: #fbbf24;
+}
+.crowd-high {
+  color: #ef4444;
+}
+/* ---------- PassengerDashboard styles (append this block) ---------- */
+
+/* Glass-card base for panels */
+.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #0f1720;
+}
+
+/* Details header layout */
+.details-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+}
+
+.bus-badge {
+  flex: 0 0 72px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.bus-number-badge {
+  background: linear-gradient(180deg,#fff2e6,#ffd9b3);
+  color: #222;
+  font-weight: 800;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 18px;
+  box-shadow: 0 8px 18px rgba(255,136,0,0.12);
+}
+
+.bus-info { flex: 1; }
+
+.route-name {
+  margin: 0;
+  color: #ff8800;
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+
+.arrival-row {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom: 8px;
+}
+.arrival-time {
+  background: rgba(255,136,0,0.12);
+  color:#ff8800;
+  padding:6px 10px;
+  border-radius:8px;
+  font-weight:700;
+}
+
+.crowd-row { display:flex; align-items:center; gap:8px; }
+.crowd-pill {
+  padding:6px 10px;
+  border-radius: 999px;
+  font-weight:700;
+}
+.crowd-high { background:#ffdad6; color:#ff4d4f; }
+.crowd-medium { background:#fff1e0; color:#ff9f1c; }
+.crowd-low { background:#eafff0; color:#28c76f; }
+
+/* Actions */
+.details-actions {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.details-btn {
+  background: linear-gradient(90deg,#ff8800,#ffb86b);
+  border:none;
+  padding:10px 12px;
+  color:#fff;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+  box-shadow: 0 6px 20px rgba(255,136,0,0.12);
+}
+.details-btn.dark {
+  background:#222;
+  color:#ff8800;
+  box-shadow:none;
+}
+
+/* Stops list: vertical line with points */
+.stops-section { padding: 14px; }
+.stops-list { position: relative; padding-left: 24px; }
+.stops-list .stops-line {
+  position: absolute;
+  left: 14px;
+  top: 22px;
+  bottom: 20px;
+  width: 2px;
+  background: linear-gradient(#ffe6cf,#ffd4ba);
+  border-radius:4px;
+  opacity:0.9;
+}
+.stops-list ul {
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+.stop-item {
+  position: relative;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding: 10px 6px;
+}
+.stop-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  flex-shrink:0;
+}
+.stop-meta { font-size: 0.95rem; color: #0f1720; }
+.stop-name { font-weight:700; }
+.stop-importance { font-size: 0.82rem; opacity:0.95; margin-top:4px; }
+
+/* Booking modal */
+.booking-modal { max-width: 520px; width: 100%; }
+.booking-row { display:flex; justify-content:space-between; gap:16px; margin-bottom:12px; }
+.booking-selects { display:flex; gap:12px; margin-top:6px; }
+.booking-selects select { padding:8px 10px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:rgba(255,255,255,0.95); }
+.booking-selects label { display:block; margin-bottom:6px; color:#666; font-size:0.9rem; }
+
+.muted { color:#6b7280; font-size:0.85rem; }
+.route-strong { font-weight:800; color:#0f1720; }
+.arrival-strong { font-weight:700; color:#ff8800; }
+
+.booking-actions { margin-top:14px; display:flex; gap:10px; align-items:center; }
+.modal-close { background:#ff8800; color:#ffffff; border:none; padding:8px 10px; cursor:pointer; border-radius:8px; }
+
+/* Small UI bits */
+.user-avatar { width:34px; height:34px; background: linear-gradient(180deg,#fff,#ffd9b3); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:800; margin-right:6px; color:#222; }
+.user-text { font-weight:700; color:#111; }
+
+/* Buttons used in other places */
+.add-lost-btn { background:#ff8800; color:#fff; border:none; padding:8px 10px; border-radius:10px; cursor:pointer; font-weight:700; }
+.search-btn { background:#fff; color:#222; border: none; padding:10px 12px; border-radius:10px; cursor:pointer; }
+
+/* Make crowd legend compact */
+.crowd-legend { display:flex; gap:8px; align-items:center; margin-top:10px; }
+.legend-title { font-size:0.9rem; color:#666; margin-right:6px; }
+
+/* Modal bg/box overrides to ensure look consistent */
+.modal-bg { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; background: rgba(3,7,18,0.35); z-index: 1200; }
+.modal-box { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 18px; min-width: 280px; max-width: 90vw; box-shadow: 0 10px 30px rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.06); color: #0f1720; }
+
+/* Responsive tweaks */
+@media (max-width:520px) {
+  .details-header { flex-direction: column; align-items:flex-start; gap:12px; }
+  .details-actions { flex-direction:row; }
+  .booking-row { flex-direction:column; gap:8px; }
+  .booking-selects { flex-direction:column; }
+}
+
+/* ---------- End PassengerDashboard styles ---------- */
+/* ---------- PassengerDashboard booking + QR glassmorphism styles (append) ---------- */
+
+/* color tokens (orange, white, black) */
+:root {
+  --orange-500: #ff8800;
+  --orange-600: #ff7a00;
+  --white-weak: rgba(255,255,255,0.92);
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.07);
+  --black-800: rgba(3,7,18,0.95);
+}
+
+/* Glass-card base used on panels */
+.passenger-dashboard .glass-card,
+.passenger-dashboard .glass-box {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px) saturate(120%);
+  border: 1px solid var(--glass-border);
+  color: var(--black-800);
+}
+
+/* Booking modal specifics */
+.booking-modal {
+  max-width: 520px;
+  width: 96%;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* top row inside booking modal */
+.booking-top {
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.bus-badge-small {
+  width:68px;
+  height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  background: linear-gradient(180deg,var(--white-weak), rgba(255,255,255,0.88));
+  box-shadow: 0 8px 20px rgba(255,136,0,0.12);
+}
+.bus-number-small {
+  color: #111;
+  font-weight:900;
+  font-size:18px;
+}
+
+/* booking info */
+.booking-info .route-strong { color: var(--orange-500); font-weight:800; font-size:1.05rem; }
+.booking-info .arrival-strong { color: #111; font-weight:700; margin-top:6px; }
+.booking-info .crowd-pill.mini {
+  display:inline-block;
+  margin-top:8px;
+  padding:6px 8px;
+  border-radius:999px;
+  background: rgba(255,136,0,0.08);
+  color: var(--orange-500);
+  font-weight:700;
+}
+
+/* selects and inputs */
+.booking-selects { display:flex; gap:12px; margin-top:4px; }
+.booking-selects select {
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.94);
+  color: #111;
+  font-weight:600;
+}
+
+/* input row */
+.input-row { display:flex; gap:12px; align-items:center; justify-content:space-between; margin-top:8px; }
+.input-row input { padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); width:100%; }
+.price-note .seat-pill {
+  background: rgba(0,0,0,0.06);
+  color: #111;
+  padding:8px 10px;
+  border-radius:8px;
+  font-weight:700;
+}
+
+/* booking actions */
+.booking-actions { display:flex; gap:12px; margin-top:8px; }
+.details-btn {
+  background: linear-gradient(90deg,var(--orange-500), #ffb86b);
+  border:none;
+  padding:10px 14px;
+  color: white;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:800;
+  box-shadow: 0 10px 30px rgba(255,136,0,0.15);
+}
+.modal-close {
+  background:#ff8800;
+  border:1px solid rgba(0,0,0,0.07);
+  padding:10px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+/* bottom small actions */
+.booking-foot { display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
+.qr-secondary {
+  background: transparent;
+  border: 1px solid var(--orange-500);
+  color: var(--orange-500);
+  padding:8px 12px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+.scan-btn {
+  background: black;
+  color: white;
+  border:none;
+  padding:8px 12px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+/* QR Modal */
+.qr-modal { max-width: 720px; width: 94%; }
+.qr-title { margin:0 0 8px 0; color:var(--orange-500); }
+.qr-body { display:flex; gap:16px; align-items:flex-start; }
+.qr-image {
+  width: 260px;
+  height: 260px;
+  border-radius:12px;
+  background: white;
+  padding:10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.qr-meta { flex:1; display:flex; flex-direction:column; gap:8px; }
+.qr-text {
+  background: rgba(255,255,255,0.95);
+  padding:10px;
+  border-radius:8px;
+  color:#111;
+  font-size:0.88rem;
+  max-height: 260px;
+  overflow:auto;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.qr-actions { display:flex; gap:8px; margin-top:auto; }
+.download-link {
+  display:inline-block;
+  background: var(--orange-500);
+  color: white;
+  padding:8px 12px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:800;
+}
+
+/* Scan modal */
+.scan-modal { max-width: 520px; width: 94%; display:flex; flex-direction:column; gap:12px; align-items:center; }
+.scan-video {
+  width: 100%;
+  height: 320px;
+  border-radius: 12px;
+  background: black;
+  object-fit: cover;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.scan-note { color:#111; font-size:0.88rem; background: rgba(255,255,255,0.95); padding:8px 10px; border-radius:8px; }
+.scan-actions { display:flex; gap:8px; width:100%; justify-content:center; }
+
+/* Stops line and other existing details use the same orange tint */
+.stops-line { background: linear-gradient(180deg, rgba(255,136,0,0.25), rgba(255,136,0,0.12)); }
+
+/* small util */
+.muted { color:#666; font-size:0.86rem; }
+
+/* ensure modal overlays appear above other elements */
+.modal-bg { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; background: rgba(3,7,18,0.45); z-index: 1200; }
+
+/* responsive tweaks */
+@media (max-width:600px) {
+  .qr-body { flex-direction:column; align-items:center; }
+  .qr-image { width:220px; height:220px; }
+  .booking-selects { flex-direction:column; }
+  .input-row { flex-direction:column; align-items:stretch; }
+}
+/* ---------- PassengerDashboard updates: stops (no priority text), 5-digit code + modal button ---------- */
+
+/* ensure the passenger-dashboard scope (if you used that class) */
+.passenger-dashboard .stop-meta .stop-importance { display: none; }
+
+/* Make stop dot default orange unless a stopImportance color exists (component sets inline color when needed) */
+.passenger-dashboard .stop-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+  background: #ff8800; /* default orange */
+}
+
+/* Booking modal: ensure bus code input is visually prominent */
+.passenger-dashboard .booking-modal input[type="text"] {
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-size: 1.02rem;
+  text-align: center;
+}
+
+/* Style for the small bus badge in booking modal */
+.passenger-dashboard .bus-number-small {
+  font-size: 20px;
+  letter-spacing: 0.6px;
+}
+
+/* Confirm / get QR button already styled - ensure disabled look */
+.passenger-dashboard .details-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Popup message after booking - center align and orange/white OK button */
+.passenger-dashboard .modal-msg {
+  max-width: 420px;
+  width: 92%;
+  padding: 18px;
+  text-align: center;
+  border-radius: 12px;
+}
+.passenger-dashboard .modal-msg .modal-msg-text {
+  font-weight: 700;
+  color: #111;
+  font-size: 1rem;
+}
+.passenger-dashboard .modal-ok {
+  margin: 0 auto;
+  display: inline-block;
+  background: linear-gradient(90deg,#ff8800,#ffb86b);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(255,136,0,0.15);
+}
+
+/* Keep the rest of the booking modal styles consistent (glass/morphism) */
+/* reuse earlier definitions - ensure high z-index for modals */
+.passenger-dashboard .modal-bg { z-index: 1300; }
+
+/* Add subtle animation to OK button hover */
+.passenger-dashboard .modal-ok:hover {
+  transform: translateY(-2px);
+  transition: transform 0.15s ease;
+}
+
+/* Make sure stop meta text spacing is neat after removing importance */
+.passenger-dashboard .stop-meta { font-size: 0.95rem; color: #0f1720; margin-left: 6px; }
+
+/* Ensure booking input row stacks nicely on small screens */
+@media (max-width:520px) {
+  .passenger-dashboard .input-row { flex-direction: column; gap: 8px; }
+  .passenger-dashboard .booking-selects { flex-direction: column; }
+}
+/* ---------- Bottom nav: improved active styling (white text on orange bg) ---------- */
+.bottom-bar-new {
+  position: fixed;
+  left: 50%;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  max-width: 520px;
+  transform: translateX(-50%);
+  padding: 8px 22px 2px 22px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 99;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+/* Base button look */
+.bottom-bar-new button {
+  flex: 1 1 auto;
+  margin: 0 4px;
+  background: transparent;
+  border: none;
+  color: #111;              /* default label color */
+  padding: 8px 10px;
+  border-radius: 10px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  min-width: 60px;
+}
+
+/* Icon size (keeps icon and label aligned) */
+.bottom-bar-new button span[role="img"] {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Active state: orange gradient background + white text/icon */
+.bottom-bar-new button.active {
+  background: linear-gradient(90deg,#ff8800,#ffb86b);
+  color: #fff !important;
+  box-shadow: 0 8px 22px rgba(255,136,0,0.16);
+}
+
+/* Ensure icon and label inherit white color when active */
+.bottom-bar-new button.active span,
+.bottom-bar-new button.active .icon,
+.bottom-bar-new button.active .label {
+  color: #fff !important;
+}
+
+/* Small visual tweak for inactive hover */
+.bottom-bar-new button:not(.active):hover {
+  background: rgba(255,136,0,0.06);
+  color: #111;
+}
+
+/* Make the label line visible and consistent */
+.bottom-bar-new button br { display: none; } /* keep layout consistent if you used <br/> in markup */
+.bottom-bar-new button::after {
+  content: attr(data-label); /* optional: if you want to set label via data-label attribute */
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 420px) {
+  .bottom-bar-new button { font-size: 12px; padding: 8px 6px; }
+  .bottom-bar-new button span[role="img"] { font-size: 17px; }
+}
