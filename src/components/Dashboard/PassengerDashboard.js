@@ -36,11 +36,13 @@ function PassengerDashboard({ user, onLogout }) {
   const [gpsLocations, setGpsLocations] = useState({}); // { docId: { lat, lng, timestamp } }
   const gpsUnsubRef = useRef(null);
 
-  // Book ticket modal state
+  // Booking / ticket state
   const [bookModalOpen, setBookModalOpen] = useState(false);
   const [manualBusCode, setManualBusCode] = useState("");
   const [selectedPickup, setSelectedPickup] = useState("");
   const [selectedDrop, setSelectedDrop] = useState("");
+  // store last booking so "Show QR" is available after booking
+  const [lastBooking, setLastBooking] = useState(null); // { busId, payload }
 
   // QR modals
   const [qrModalOpen, setQrModalOpen] = useState(false);
@@ -77,7 +79,6 @@ function PassengerDashboard({ user, onLogout }) {
 
   // Subscribe to gps_locations collection for live positions (display on map)
   useEffect(() => {
-    // unsubscribe previous if any
     if (gpsUnsubRef.current) gpsUnsubRef.current();
 
     try {
@@ -195,7 +196,7 @@ function PassengerDashboard({ user, onLogout }) {
   };
 
   // Booking flow (confirm booking) - requires pickup & drop and 5-digit numeric code
-  const handleConfirmBooking = () => {
+  const handleConfirmBooking = async () => {
     if (!selectedPickup || !selectedDrop) {
       showModal("Please select both pickup and drop locations before confirming the ticket.");
       return;
@@ -211,66 +212,61 @@ function PassengerDashboard({ user, onLogout }) {
       return;
     }
 
-    setBookModalOpen(false);
-
-    const payload = JSON.stringify({
+    // Compose payload
+    const payloadObj = {
       busCode,
       user: userName,
       busNumber: detailsBus?.number || detailsBus?.id || "unknown",
       pickup: selectedPickup,
       drop: selectedDrop,
       ts: new Date().toISOString()
-    });
+    };
+    const payload = JSON.stringify(payloadObj);
 
+    // Persist booking if you want (example: bookings collection)
+    try {
+      await firestore.collection("bookings").add({
+        busId: detailsBus?.id || null,
+        busNumber: detailsBus?.number || null,
+        user: userName,
+        pickup: selectedPickup,
+        drop: selectedDrop,
+        busCode,
+        createdAt: new Date().toISOString()
+      });
+    } catch (err) {
+      // non-fatal; still allow showing QR
+      console.warn("Failed to persist booking:", err);
+    }
+
+    // Save lastBooking so UI shows "Show QR" button; do NOT auto-open the QR modal per request
+    setLastBooking({ busId: detailsBus?.id, payload: payloadObj });
     setQrData(payload);
-    setQrModalOpen(true);
 
-    showModal(`Ticket confirmed!\nPickup: ${selectedPickup}\nDrop: ${selectedDrop}\nBus Code: ${busCode}`);
+    setBookModalOpen(false);
 
+    showModal(`Ticket booked!\nPickup: ${selectedPickup}\nDrop: ${selectedDrop}\nBus Code: ${busCode}`);
+
+    // reset modal inputs
     setManualBusCode("");
     setSelectedPickup("");
     setSelectedDrop("");
   };
 
-  // Show QR (quick preview) - require pickup/drop first
-  const handleShowQr = () => {
-    if (!selectedPickup || !selectedDrop) {
-      showModal("Please select pickup and drop locations before showing the ticket QR.");
+  // Show QR (quick preview) - will use lastBooking if present or qrData
+  const handleShowQrFromDetails = (busId) => {
+    if (lastBooking && lastBooking.busId === busId) {
+      setQrData(JSON.stringify(lastBooking.payload));
+      setQrModalOpen(true);
       return;
     }
-    if (selectedPickup === selectedDrop) {
-      showModal("Pickup and drop cannot be the same. Please choose different stops.");
-      return;
-    }
-
-    const busCode = /^\d{5}$/.test(manualBusCode) ? manualBusCode : generateFiveDigitCode();
-    setManualBusCode(busCode);
-
-    const payload = JSON.stringify({
-      busCode,
-      user: userName,
-      busNumber: detailsBus?.number || detailsBus?.id || "unknown",
-      pickup: selectedPickup,
-      drop: selectedDrop,
-      ts: new Date().toISOString()
-    });
-
-    setQrData(payload);
-    setQrModalOpen(true);
+    // fallback: if detailsBus exists and qrData present
+    if (qrData) setQrModalOpen(true);
+    else showModal("No ticket available for this bus. Please book first.");
   };
 
-  // Scan QR - require pickup/drop first (so scan flow follows the correct order)
-  const handleOpenScan = () => {
-    if (!selectedPickup || !selectedDrop) {
-      showModal("Please select pickup and drop locations before scanning a ticket.");
-      return;
-    }
-    if (selectedPickup === selectedDrop) {
-      showModal("Pickup and drop cannot be the same. Please choose different stops.");
-      return;
-    }
-    setScanModalOpen(true);
-  };
+  // Scan QR - kept as separate feature (not part of the booking modal)
+  
 
   // QR modal helpers
   const qrImageUrl = size => {
@@ -311,16 +307,13 @@ function PassengerDashboard({ user, onLogout }) {
   }, [scanModalOpen]);
 
   // ---------------- Map (Leaflet) integration ----------------
-  // We'll dynamically load Leaflet from CDN so you don't need extra bundler deps.
   const mapRef = useRef(null);
   const leafletMarkersRef = useRef({}); // docId -> marker
   const leafletLoadedRef = useRef(false);
 
-  // load leaflet CSS+JS dynamically
   const loadLeaflet = () => new Promise((resolve, reject) => {
     if (typeof window === "undefined") return reject();
     if (leafletLoadedRef.current && window.L) return resolve();
-    // CSS
     if (!document.querySelector('link[data-leaflet]')) {
       const link = document.createElement("link");
       link.rel = "stylesheet";
@@ -328,7 +321,6 @@ function PassengerDashboard({ user, onLogout }) {
       link.setAttribute("data-leaflet", "1");
       document.head.appendChild(link);
     }
-    // Script
     if (window.L) {
       leafletLoadedRef.current = true;
       return resolve();
@@ -345,7 +337,6 @@ function PassengerDashboard({ user, onLogout }) {
       script.onerror = reject;
       document.body.appendChild(script);
     } else {
-      // if script tag exists but L not ready yet, poll
       const check = () => {
         if (window.L) {
           leafletLoadedRef.current = true;
@@ -356,7 +347,6 @@ function PassengerDashboard({ user, onLogout }) {
     }
   });
 
-  // initialize map once
   useEffect(() => {
     let mounted = true;
     async function init() {
@@ -366,7 +356,6 @@ function PassengerDashboard({ user, onLogout }) {
         if (!mapRef.current) {
           const L = window.L;
           mapRef.current = L.map("passenger-map", { zoomControl: true });
-          // set a default view (fallback to a reasonable lat/lng)
           mapRef.current.setView([12.9716, 77.5946], 12);
           L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: '&copy; OpenStreetMap contributors'
@@ -380,14 +369,12 @@ function PassengerDashboard({ user, onLogout }) {
     return () => { mounted = false; };
   }, []);
 
-  // update markers whenever gpsLocations or buses change
   useEffect(() => {
     if (!mapRef.current || !window.L) return;
     const L = window.L;
     const map = mapRef.current;
     const markers = leafletMarkersRef.current;
 
-    // Add / update markers from gpsLocations first (prefers real-time data)
     Object.keys(gpsLocations).forEach(id => {
       const loc = gpsLocations[id];
       if (!loc || typeof loc.lat !== "number" || typeof loc.lng !== "number") return;
@@ -399,7 +386,6 @@ function PassengerDashboard({ user, onLogout }) {
       }
     });
 
-    // Also add markers for buses that include lat/lng directly (document-level), keyed by bus id prefixed to avoid collision
     buses.forEach(bus => {
       const key = `bus_${bus.id}`;
       const lat = bus.location?.lat ?? bus.lat;
@@ -414,7 +400,6 @@ function PassengerDashboard({ user, onLogout }) {
       }
     });
 
-    // remove markers that are no longer present (cleanup)
     Object.keys(markers).forEach(k => {
       const isGpsKey = !k.startsWith("bus_");
       if (isGpsKey) {
@@ -423,7 +408,6 @@ function PassengerDashboard({ user, onLogout }) {
           delete markers[k];
         }
       } else {
-        // bus_ keys: check if bus still in list or has lat/lng
         const busId = k.replace(/^bus_/, "");
         const bus = buses.find(b => String(b.id) === String(busId));
         const hasLoc = bus && (typeof (bus.location?.lat ?? bus.lat) === "number");
@@ -434,20 +418,33 @@ function PassengerDashboard({ user, onLogout }) {
       }
     });
 
-    // adjust view to fit all markers if any
     const allMarkers = Object.values(markers);
     if (allMarkers.length > 0) {
       const group = L.featureGroup(allMarkers);
       try {
         map.fitBounds(group.getBounds().pad(0.2));
-      } catch (e) {
-        // fallback no-op
-      }
+      } catch (e) {}
     }
 
   }, [gpsLocations, buses]);
 
   // ---------------- end Map integration ----------------
+
+  // SOS trigger from passenger - writes to firestore so admin can see it
+  const triggerSosAlert = async (busNumber = "", message = "SOS triggered by passenger") => {
+    try {
+      await firestore.collection("sos_alerts").add({
+        busNumber,
+        message,
+        createdBy: userName,
+        timestamp: new Date().toISOString()
+      });
+      showModal("SOS alert sent. Admin will be notified.");
+    } catch (err) {
+      console.error("Failed to create SOS alert:", err);
+      showModal("Failed to send SOS alert. Try again.");
+    }
+  };
 
   return (
     <div className="dashboard-bg passenger-dashboard">
@@ -491,27 +488,38 @@ function PassengerDashboard({ user, onLogout }) {
       {/* Bus Details Page */}
       {detailsBus ? (
         <div className="main-content">
-          <div className="details-header glass-card">
-            <div className="bus-badge">
-              <div className="bus-number-badge">{String(detailsBus.number).toUpperCase()}</div>
-            </div>
-            <div className="bus-info">
-              <h3 className="route-name">{detailsBus.route}</h3>
-              <div className="arrival-row">
-                <span className="arrival-label">Arrives in</span>
-                <span className="arrival-time">{detailsBus.arrival} min</span>
+          <div className="details-header glass-card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div className="bus-badge">
+                <div className="bus-number-badge">{String(detailsBus.number).toUpperCase()}</div>
               </div>
-              <div className="crowd-row">
-                <span className="crowd-label">Crowd:</span>
-                <span className={`crowd-pill crowd-${(detailsBus.crowd || "Medium").toLowerCase()}`}>
-                  {detailsBus.crowd || "Medium"}
-                </span>
+              <div className="bus-info">
+                <h3 className="route-name">{detailsBus.route}</h3>
+                <div className="arrival-row">
+                  <span className="arrival-label">Arrives in</span>
+                  <span className="arrival-time">{detailsBus.arrival} min</span>
+                </div>
+                <div className="crowd-row">
+                  <span className="crowd-label">Crowd:</span>
+                  <span className={`crowd-pill crowd-${(detailsBus.crowd || "Medium").toLowerCase()}`}>
+                    {detailsBus.crowd || "Medium"}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="details-actions">
-              <button className="details-btn" onClick={() => openBookModal(detailsBus)}>
-                Book Ticket
-              </button>
+
+            <div className="details-actions" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              {/* If a booking exists for this bus in this session, show "Show QR" */}
+              {lastBooking && lastBooking.busId === detailsBus?.id ? (
+                <button className="details-btn" onClick={() => handleShowQrFromDetails(detailsBus?.id)}>
+                  Show QR
+                </button>
+              ) : (
+                <button className="details-btn" onClick={() => openBookModal(detailsBus)}>
+                  Book Ticket
+                </button>
+              )}
+
               <button
                 className="details-btn dark"
                 onClick={() => setDetailsBus(null)}
@@ -548,11 +556,11 @@ function PassengerDashboard({ user, onLogout }) {
             <div className="stops-foot" />
           </div>
 
-          {/* Book Ticket Modal (enhanced, glass morphism + QR) */}
+          {/* Book Ticket Modal */}
           {bookModalOpen && (
             <div className="modal-bg" onClick={() => setBookModalOpen(false)}>
               <div className="modal-box booking-modal glass-card" onClick={e => e.stopPropagation()}>
-                <div className="booking-top">
+                <div className="booking-top" style={{ display: "flex", gap: 12 }}>
                   <div className="bus-badge-small">
                     <div className="bus-number-small">{String(detailsBus.number).toUpperCase()}</div>
                   </div>
@@ -563,15 +571,15 @@ function PassengerDashboard({ user, onLogout }) {
                   </div>
                 </div>
 
-                <div className="booking-selects">
-                  <div>
+                <div className="booking-selects" style={{ display: "flex", gap: 12, marginTop: 12 }}>
+                  <div style={{ flex: 1 }}>
                     <label>Pickup</label>
                     <select value={selectedPickup} onChange={e => setSelectedPickup(e.target.value)}>
                       <option value="">Select pickup</option>
                       {(detailsBus.stops || []).map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <label>Drop</label>
                     <select value={selectedDrop} onChange={e => setSelectedDrop(e.target.value)}>
                       <option value="">Select drop</option>
@@ -580,7 +588,7 @@ function PassengerDashboard({ user, onLogout }) {
                   </div>
                 </div>
 
-                <div className="input-row">
+                <div className="input-row" style={{ display: "flex", gap: 12, marginTop: 12 }}>
                   <div style={{ flex: 1 }}>
                     <small className="muted">Bus Code (5 digits)</small>
                     <input
@@ -588,42 +596,33 @@ function PassengerDashboard({ user, onLogout }) {
                       value={manualBusCode}
                       placeholder="12345"
                       onChange={e => {
-                        // allow only digits, limit to 5
                         const v = e.target.value.replace(/\D/g, "").slice(0, 5);
                         setManualBusCode(v);
                       }}
                       maxLength={5}
                     />
                   </div>
-                  <div className="price-note">
-                    
-                  </div>
                 </div>
 
-                <div className="booking-actions">
+                <div className="booking-actions" style={{ display: "flex", gap: 8, marginTop: 14 }}>
                   <button
                     className="details-btn"
                     onClick={handleConfirmBooking}
+                    style={{ flex: 1 }}
                   >
                     Confirm & Get QR
                   </button>
-                  <button className="modal-close" onClick={() => setBookModalOpen(false)}>Cancel</button>
+                  <button
+                    className="modal-close"
+                    onClick={() => setBookModalOpen(false)}
+                    style={{ flex: 1 }}
+                  >
+                    Cancel
+                  </button>
                 </div>
 
-                <div className="booking-foot">
-                  <button
-                    className="qr-secondary"
-                    onClick={() => handleShowQr()}
-                  >
-                    Show QR
-                  </button>
-
-                  <button
-                    className="scan-btn"
-                    onClick={() => handleOpenScan()}
-                  >
-                    Scan QR
-                  </button>
+                <div className="booking-foot" style={{ marginTop: 12 }}>
+                  {/* Scan removed from booking modal as requested; keep scan feature available elsewhere */}
                 </div>
               </div>
             </div>
@@ -634,15 +633,15 @@ function PassengerDashboard({ user, onLogout }) {
             <div className="modal-bg" onClick={() => setQrModalOpen(false)}>
               <div className="modal-box qr-modal glass-card" onClick={e => e.stopPropagation()}>
                 <h4 className="qr-title">Your Ticket QR</h4>
-                <div className="qr-body">
+                <div className="qr-body" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                   {qrData ? (
                     <img className="qr-image" src={qrImageUrl(260)} alt="Ticket QR" />
                   ) : (
                     <div className="qr-placeholder">No QR data</div>
                   )}
-                  <div className="qr-meta">
-                    <pre className="qr-text">{qrData ? JSON.stringify(JSON.parse(qrData), null, 2) : ""}</pre>
-                    <div className="qr-actions">
+                  <div className="qr-meta" style={{ flex: 1 }}>
+                    <pre className="qr-text" style={{ whiteSpace: "pre-wrap" }}>{qrData ? JSON.stringify(JSON.parse(qrData), null, 2) : ""}</pre>
+                    <div className="qr-actions" style={{ display: "flex", gap: 8, marginTop: 8 }}>
                       <a className="download-link" href={qrImageUrl(600)} download="ticket-qr.png">Download</a>
                       <button className="modal-close" onClick={() => setQrModalOpen(false)}>Close</button>
                     </div>
@@ -652,7 +651,7 @@ function PassengerDashboard({ user, onLogout }) {
             </div>
           )}
 
-          {/* Scan Modal (camera view) */}
+          {/* Scan Modal (separate feature) */}
           {scanModalOpen && (
             <div className="modal-bg" onClick={() => setScanModalOpen(false)}>
               <div className="modal-box scan-modal glass-card" onClick={e => e.stopPropagation()}>
@@ -661,7 +660,7 @@ function PassengerDashboard({ user, onLogout }) {
                 <div className="scan-note">
                   Tip: Allow camera access. To actually decode the QR you can add a decoder library such as jsQR and run decoding on the video frames.
                 </div>
-                <div className="scan-actions">
+                <div className="scan-actions" style={{ display: "flex", gap: 8, marginTop: 10 }}>
                   <button className="details-btn" onClick={() => { /* placeholder if you add decoder */ }}>Start Scan</button>
                   <button className="modal-close" onClick={() => setScanModalOpen(false)}>Close</button>
                 </div>
@@ -681,22 +680,25 @@ function PassengerDashboard({ user, onLogout }) {
                 <>
                   {buses.map(bus => (
                     <div className="bus-card glass-box" key={bus.id || bus.number} style={{ marginBottom: 10 }}>
-                      <div className="bus-title">
-                        <span className="bus-num">{bus.number}</span>
-                        <span className="bus-route">{bus.route}</span>
-                        <span className={`crowd crowd-${bus.crowd?.toLowerCase()}`}>
-                          {bus.crowd}
-                        </span>
+                      <div className="bus-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                          <span className="bus-num">{bus.number}</span>
+                          <span className="bus-route" style={{ marginLeft: 8 }}>{bus.route}</span>
+                        </div>
+
+                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          {/* If the user booked this bus in this session, show Show QR button */}
+                          {lastBooking && lastBooking.busId === bus.id ? (
+                            <button className="details-btn" onClick={() => handleShowQrFromDetails(bus.id)}>Show QR</button>
+                          ) : (
+                            <button className="details-btn" onClick={() => openBookModal(bus)}>Book Ticket</button>
+                          )}
+                        </div>
                       </div>
+
                       <div className="bus-arrival">
                         Arriving in <b>{bus.arrival} min</b>
                       </div>
-                      <button
-                        className="details-btn"
-                        onClick={() => openBookModal(bus)}
-                      >
-                        Book Ticket
-                      </button>
                     </div>
                   ))}
 
@@ -704,9 +706,7 @@ function PassengerDashboard({ user, onLogout }) {
                   <div className="glass-card" style={{ marginTop: 12, padding: 12 }}>
                     <h4 style={{ margin: "6px 0 10px 0" }}>Live Bus Map</h4>
                     <div id="passenger-map" style={{ height: 300, width: "100%", borderRadius: 8, overflow: "hidden" }} />
-                    <div style={{ marginTop: 8, fontSize: 13, color: "#444" }}>
-
-                    </div>
+                    
                   </div>
                 </>
               ) : (
@@ -714,6 +714,7 @@ function PassengerDashboard({ user, onLogout }) {
               )}
             </div>
           )}
+
           {/* Search Tab */}
           {tab === "search" && (
             <div className="glass-box">
@@ -782,49 +783,80 @@ function PassengerDashboard({ user, onLogout }) {
               {lostModalOpen && (
                 <div className="modal-bg" onClick={() => setLostModalOpen(false)}>
                   <form
-                    className="modal-box glass-box"
-                    style={{ maxWidth: 400 }}
-                    onClick={e => e.stopPropagation()}
-                    onSubmit={handleLostSubmit}
-                  >
-                    <label>Item Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={lostItem.name}
-                      onChange={e => setLostItem({ ...lostItem, name: e.target.value })}
-                    />
-                    <label>Photo of Item</label>
-                    <input type="file" accept="image/*" onChange={handleLostPhoto} />
-                    <label>Bus Number</label>
-                    <input
-                      type="text"
-                      value={lostItem.busNumber}
-                      onChange={e => setLostItem({ ...lostItem, busNumber: e.target.value })}
-                    />
-                    <label>Importance</label>
-                    <div>
-                      {["Low", "Medium", "High"].map(val => (
-                        <label key={val} style={{ marginRight: 12 }}>
-                          <input
-                            type="radio"
-                            name="importance"
-                            checked={lostItem.importance === val}
-                            onChange={() => setLostItem({ ...lostItem, importance: val })}
-                          /> {val}
-                        </label>
-                      ))}
-                    </div>
-                    <label>Description</label>
-                    <textarea
-                      required
-                      value={lostItem.desc}
-                      onChange={e => setLostItem({ ...lostItem, desc: e.target.value })}
-                    />
-                    <button type="submit" className="add-lost-btn" disabled={uploading}>
-                      {uploading ? "Adding..." : "Submit"}
-                    </button>
-                  </form>
+  className="modal-box glass-box lost-form"
+  style={{ maxWidth: 400 }}
+  onClick={e => e.stopPropagation()}
+  onSubmit={handleLostSubmit}
+>
+  <div className="form-row">
+    <label htmlFor="lost-name">Item Name</label>
+    <input
+      id="lost-name"
+      type="text"
+      required
+      value={lostItem.name}
+      onChange={e => setLostItem({ ...lostItem, name: e.target.value })}
+    />
+  </div>
+
+  <div className="form-row">
+    <label htmlFor="lost-photo">Photo of Item</label>
+    <input
+      id="lost-photo"
+      type="file"
+      accept="image/*"
+      onChange={handleLostPhoto}
+    />
+  </div>
+
+  <div className="form-row">
+    <label htmlFor="lost-bus">Bus Number</label>
+    <input
+      id="lost-bus"
+      type="text"
+      value={lostItem.busNumber}
+      onChange={e => setLostItem({ ...lostItem, busNumber: e.target.value })}
+    />
+  </div>
+
+  <div className="form-row">
+    <label>Importance</label>
+    <div className="radio-group" role="radiogroup" aria-label="Importance">
+      {["Low", "Medium", "High"].map(val => (
+        <label key={val} className="radio-label">
+          <input
+            type="radio"
+            name="importance"
+            value={val}
+            checked={lostItem.importance === val}
+            onChange={() => setLostItem({ ...lostItem, importance: val })}
+          />
+          <span className="radio-text">{val}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+
+  <div className="form-row full-width">
+    <label htmlFor="lost-desc">Description</label>
+    <textarea
+      id="lost-desc"
+      required
+      value={lostItem.desc}
+      onChange={e => setLostItem({ ...lostItem, desc: e.target.value })}
+      rows={4}
+    />
+  </div>
+
+  <div className="form-row form-actions full-width">
+    <button type="submit" className="add-lost-btn" disabled={uploading}>
+      {uploading ? "Adding..." : "Submit"}
+    </button>
+    <button type="button" className="modal-close" onClick={() => setLostModalOpen(false)}>
+      Cancel
+    </button>
+  </div>
+</form>
                 </div>
               )}
               <ul style={{ marginTop: "17px", padding: 0 }}>
@@ -868,7 +900,10 @@ function PassengerDashboard({ user, onLogout }) {
           {tab === "sos" && (
             <div className="glass-box">
               <h3 style={{ color: "#ff8800" }}>SOS Alert</h3>
-              <button className="sos-btn" onClick={() => showModal("SOS Alert triggered!")}>
+              <button
+                className="sos-btn"
+                onClick={() => triggerSosAlert("", "SOS triggered by passenger")}
+              >
                 Trigger SOS Alert
               </button>
             </div>

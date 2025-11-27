@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import "../../App.css"; // <-- added: use the shared CSS used by PassengerDashboard
 import 'chart.js/auto'; // ensures ChartJS components (scales/elements/controllers) are registered
 import { Bar, Pie, Line, Doughnut } from "react-chartjs-2";
 import { firestore } from "../../firebase";
