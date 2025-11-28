@@ -294,16 +294,3 @@ Common npm scripts (example in `package.json`):
 6. Optional: run Firebase Emulator.
 
 ---
-
-## License
-
-MIT
-
----
-
-If you'd like I can:
-- Add a `CONTRIBUTING.md` and `SECURITY.md`.
-- Provide a recommended set of Firestore security rules tailored to this app.
-- Generate a Git patch that adds `src/App.css` and updates `AdminDashboard.jsx` to include the `.admin-dashboard` class and CSS import.
-
-Which would you like next?
