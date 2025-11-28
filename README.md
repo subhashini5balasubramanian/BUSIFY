@@ -1,70 +1,309 @@
-# Getting Started with Create React App
+# Busify — Admin & Passenger Dashboards
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Lightweight React dashboards for a Busify-style app. This project includes:
 
-## Available Scripts
+- AdminDashboard — management UI with charts, SOS & Lost Items management.
+- PassengerDashboard — arriving buses, booking + QR generation, lost & found upload, live map (Leaflet).
+- Firebase (Firestore + Storage) as backend.
+- Chart.js (via react-chartjs-2) and Leaflet for charts & maps.
+- A shared `src/App.css` providing the design system (glass cards, bottom nav). Admin view uses the `.admin-dashboard` class to show an orange background theme.
 
-In the project directory, you can run:
+This README explains how to set up, run, and customize the project.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Table of contents
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- [Requirements](#requirements)
+- [Quick start](#quick-start)
+- [Project structure](#project-structure)
+- [Firebase setup & example code](#firebase-setup--example-code)
+- [Environment variables](#environment-variables)
+- [Styling & admin orange background](#styling--admin-orange-background)
+- [Firestore collections / expected schema](#firestore-collections--expected-schema)
+- [Security & rules guidance](#security--rules-guidance)
+- [Development notes & best practices](#development-notes--best-practices)
+- [Scripts](#scripts)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Requirements
 
-### `npm run build`
+- Node.js 16+ (LTS recommended)
+- npm or Yarn
+- A Firebase project with Firestore, Storage and Authentication enabled
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Quick start
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Clone the repository
+   ```bash
+   git clone <repo-url>
+   cd <repo-folder>
+   ```
 
-### `npm run eject`
+2. Install dependencies
+   ```bash
+   npm install
+   # or
+   yarn
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. Add Firebase environment variables (see [Environment variables](#environment-variables))
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. Create `src/firebase.js` (example below)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+5. Start the dev server
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+6. Open http://localhost:3000
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Project structure (example)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- src/
+  - components/
+    - AdminDashboard.jsx
+    - PassengerDashboard.jsx
+  - firebase.js
+  - App.css
+  - index.js
+- public/
+- package.json
 
-### Code Splitting
+Notes:
+- `AdminDashboard.jsx` handles chart data, admin management actions (trigger SOS, resolve, delete lost items) and uses `chart.js`.
+- `PassengerDashboard.jsx` handles map loading (Leaflet), bookings and QR generation, lost item uploads, and camera access for scanning (decoding optional).
+- `App.css` contains shared styles and `.admin-dashboard` override.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## Firebase setup & example code
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Create a Firebase project in the Firebase Console and enable:
 
-### Making a Progressive Web App
+- Firestore
+- Storage
+- Authentication (Email/password or providers you need)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Example `src/firebase.js` (compat-style; adapt to modular SDK if preferred):
 
-### Advanced Configuration
+```javascript name=src/firebase.js
+// src/firebase.js
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+import "firebase/compat/storage";
+import "firebase/compat/auth";
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
+};
 
-### Deployment
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+export const firestore = firebase.firestore();
+export const storage = firebase.storage();
+export const auth = firebase.auth();
+export default firebase;
+```
 
-### `npm run build` fails to minify
+Important:
+- Use the Firebase Emulator Suite for local testing of rules and functions when possible.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## Environment variables
+
+Create a `.env.local` file at the project root (never commit secrets):
+
+```
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+```
+
+Restart the dev server after changing environment variables.
+
+---
+
+## Styling & admin orange background
+
+Shared UI styles live in `src/App.css`. To enable an orange themed admin background the AdminDashboard root container adds `admin-dashboard`:
+
+```jsx
+<div className="dashboard-bg admin-dashboard" style={{ paddingBottom: 130 }}>
+  ...
+</div>
+```
+
+Example CSS snippet (in `App.css`):
+
+```css
+.admin-dashboard {
+  background: linear-gradient(180deg, #ff8800 0%, #ffb86b 100%) !important;
+  color: #fff !important;
+}
+```
+
+Adjust colors and gradients in `App.css` to match branding.
+
+---
+
+## Firestore collections / expected schema
+
+The UI expects the following collection names and common fields (adapt as needed):
+
+- buses (docId = bus.id)
+  - number, route, arrival, departureTime, arrivalTime, status, location: { lat, lng }, stops: [], crowd
+- users
+  - name, email, phone, role: "admin" | "driver" | "passenger", createdAt, busNumber (for drivers)
+- bookings
+  - busId, busNumber, user, pickup, drop, busCode, createdAt
+- lost_items
+  - name, photo (url), busNumber, importance ("Low"|"Medium"|"High"), desc, user, timestamp
+- sos_alerts
+  - busNumber, message, createdBy, timestamp, resolved (boolean), resolvedAt
+- gps_locations (optional, used by live map)
+  - lat, lng, timestamp
+
+The code includes a `dateKeyFromRecord` helper which supports both Firestore `Timestamp` objects (with `.toDate()`) and ISO strings.
+
+---
+
+## Security & rules guidance (high-level)
+
+Do not rely on client validation for access control. Use Firestore security rules.
+
+Example (high-level, minimal):
+
+Firestore rules (conceptual — test and adapt):
+```text
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /buses/{bus} {
+      allow read: if request.auth != null; // limit to authenticated or public read as desired
+      allow write: if false; // only via admin or backend with service account
+    }
+    match /sos_alerts/{id} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow update: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow delete: if false;
+    }
+    match /lost_items/{id} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow update, delete: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    // ... users, bookings, gps_locations rules similar pattern
+  }
+}
+```
+
+Storage rules:
+- Only allow authenticated uploads.
+- Validate file size and content type where possible.
+- Consider storing images with restricted read and provide signed URLs if privacy is required.
+
+Use the Firebase Emulator to test rules locally.
+
+---
+
+## Development notes & best practices
+
+- Realtime listeners:
+  - Use `onSnapshot` for `gps_locations`, `lost_items` etc.
+  - Unsubscribe on component unmount to avoid memory leaks.
+
+- Timestamps:
+  - Prefer `firebase.firestore.FieldValue.serverTimestamp()` when writing time from clients if server time is required.
+
+- Map (Leaflet) integration:
+  - The PassengerDashboard dynamically loads Leaflet CSS/JS. Ensure the map container exists and is initialized after script load.
+
+- QR:
+  - QR generation uses external image API (`https://api.qrserver.com/v1/create-qr-code/?data=...`).
+  - QR scanning requires a decoding library (e.g., `jsQR`) to decode frames captured from `getUserMedia()`.
+
+- Charts:
+  - Include `import 'chart.js/auto'` once before using react-chartjs-2.
+  - Use `useMemo` for data/options to reduce re-renders.
+
+- Performance:
+  - Avoid fetching large collections at once in production — use pagination or server-side aggregation.
+  - Use batched writes or transactions when updating related documents.
+
+---
+
+## Scripts
+
+Common npm scripts (example in `package.json`):
+
+- `npm start` — Start development server
+- `npm run build` — Create production build
+- `npm test` — Run tests (if present)
+- `npm run lint` — Run linting (if configured)
+
+---
+
+## Troubleshooting
+
+- Map not showing: check console for leaflet load errors and ensure CSS loaded. Confirm map container size exists when map initializes.
+- Firestore permission errors: verify security rules and that your client is authenticated.
+- Storage upload issues: check CORS and Storage rules; validate file size and type.
+- Camera access denied: ensure the app is served over HTTPS (or localhost) and the browser permissions allow camera access.
+
+---
+
+## Contributing
+
+- Fork → create a branch → open a PR.
+- Keep changes scoped: styles, features, bugfixes in separate PRs.
+- Add or update tests if you introduce logic changes.
+- Use the Firebase Emulator Suite for testing rules and local Firestore/Storage.
+
+---
+
+## Example: quick local checklist
+
+1. Create Firebase project and enable Firestore, Storage, Auth.
+2. Add environment variables to `.env.local`.
+3. Add `src/firebase.js` (example above).
+4. Install deps (`npm install`).
+5. `npm start` and open `http://localhost:3000`.
+6. Optional: run Firebase Emulator.
+
+---
+
+## License
+
+MIT
+
+---
+
+If you'd like I can:
+- Add a `CONTRIBUTING.md` and `SECURITY.md`.
+- Provide a recommended set of Firestore security rules tailored to this app.
+- Generate a Git patch that adds `src/App.css` and updates `AdminDashboard.jsx` to include the `.admin-dashboard` class and CSS import.
+
+Which would you like next?
